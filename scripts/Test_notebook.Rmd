@@ -1,0 +1,198 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+
+
+```{r}
+library(ggplot2)
+library(emoGG)
+# devtools::install_github("dill/emoGG")
+library(lubridate)
+library(dplyr)
+```
+
+
+
+```{r}
+# function to read lines
+readFile = function(filepath) {
+  l_l = list()
+  con = file(filepath, "r")
+  while ( TRUE ) {
+    line = readLines(con, n = 1,encoding = "UTF-8")
+    if ( length(line) == 0 ) {
+      break
+    }
+    l_l[[length(l_l)+1]] = line
+  }
+
+  close(con)
+  return(l_l)
+}
+
+# function to process lines
+processLines = function(l){
+  res = list("datetime" = c(),
+             "date" = c(),
+             "time" = c(),
+             "participant" = c(),
+             "message" = c())
+  for(line in l){
+    if(grepl(": ", line, fixed = T)){
+      lspl = strsplit(line, " - ", fixed = T)[[1]]
+      res[["datetime"]] = c(res[["datetime"]], lspl[1])
+      res[["date"]] = c(res[["date"]], strsplit(lspl[1], ", ", fixed = T)[[1]][1])
+      res[["time"]] = c(res[["time"]], strsplit(lspl[1], ", ", fixed = T)[[1]][2])
+      res[["participant"]] = c(res[["participant"]], strsplit(lspl[2], ": ", fixed = T)[[1]][1])
+      res[["message"]] = c(res[["message"]], strsplit(lspl[2], ": ", fixed = T)[[1]][2])
+    }
+  }
+  
+  return(as.data.frame(res, stringsAsFactors = F))
+}
+```
+
+Prepare data frame
+
+```{r}
+chat_data = readFile("../Desktop/Conversa no WhatsApp com Sobre merda.txt")
+chat_data = processLines(chat_data)
+
+chat_data$datetime = lubridate::dmy_hm(chat_data$datetime)
+chat_data$date = lubridate::dmy(chat_data$date)
+chat_data$time_str = chat_data$time
+chat_data$time = lubridate::hm(chat_data$time)
+
+# rename participants
+chat_data$participant[chat_data$participant=="Cabichona"] = "Cabecinha"
+chat_data$participant[chat_data$participant=="Tomás Gomes"] = "Tomás"
+chat_data$participant[chat_data$participant=="Tiago Pires"] = "Tiago"
+chat_data$participant[chat_data$participant=="Ricardo Custódio"] = "Custódio"
+chat_data$participant[chat_data$participant=="Kiks McKikings"] = "Kicks"
+chat_data$participant[chat_data$participant=="Ruca mas Fixe"] = "Rui"
+chat_data$participant[chat_data$participant=="Canonz10Tiago2"] = "Canónico"
+chat_data$participant[chat_data$participant=="AndréTheRockTyson"] = "André"
+chat_data$participant[chat_data$participant=="Herpetologo WannaB"] = "Escudeiro"
+chat_data$participant = factor(chat_data$participant)
+
+# starts on 15/12/2023
+start_date = chat_data$date>lubridate::dmy("14/12/23")
+chat_data = chat_data[start_date,]
+
+# remove my bad poops
+bad_poops = chat_data$time > lubridate::hm("2:36") & 
+  chat_data$time < lubridate::hm("2:44") & 
+  chat_data$date==lubridate::dmy("15/12/23")
+chat_data = chat_data[!bad_poops,]
+```
+
+Poops only
+
+```{r}
+poops_only = chat_data[grepl("\U0001f4a9", chat_data$message, fixed = T),]
+```
+
+All poops so far
+
+```{r}
+ggplot(poops_only, aes(x = datetime, fill = participant))+
+  geom_histogram(bins = 50)+
+  scale_y_continuous(expand = c(0,0))+
+  ggtitle("All poops")+
+  theme_bw()
+```
+
+Poop race
+
+```{r}
+plot_df = poops_only %>% group_by(participant, .drop = F) %>% 
+   arrange(datetime) %>% 
+   mutate(count = row_number())
+
+# add present cummulative total
+cum_df = poops_only %>% group_by(participant, .drop = F) %>% 
+   count()
+cum_df$datetime = now()
+colnames(cum_df)[2] = "count"
+
+# add zero time
+zero_df = poops_only %>% group_by(participant, .drop = F) %>% 
+   count()
+zero_df$datetime = dmy_hm("15/12/23, 10:00")
+colnames(zero_df)[2] = "count"
+zero_df$count = 0
+
+plot_df = rbind(zero_df[,c(3,1,2)], plot_df[,c(1,4,6)], cum_df[,c(3,1,2)])
+
+# end labels
+lab_df = cum_df[,c(3,1,2)]
+
+ggplot(plot_df, aes(x = datetime, y=count, color=participant))+
+  geom_line(linewidth = 1)+
+  geom_point(size = 2)+
+  ggrepel::geom_text_repel(data = lab_df, mapping = aes(x = datetime, y=count, 
+                                                        color=participant, label = participant), 
+                           show.legend = F, fontface = "bold")+
+  scale_y_continuous(limits = c(0, max(plot_df$count)+1))+
+  ggtitle("Poop race")+
+  theme_bw()+
+  theme(legend.position = "none")
+
+```
+
+Poop times
+
+```{r}
+ggplot(poops_only, aes(x = time, fill = participant))+
+  geom_histogram(bins = 60)+
+  scale_x_time()+
+  scale_y_continuous(expand = c(0,0))+
+  ggtitle("Poop times")+
+  theme_bw()
+```
+
+Poop times per participant
+
+```{r}
+ggplot(poops_only, aes(x = time, colour = participant))+
+  facet_wrap(~participant)+
+  geom_density(linewidth = 1.2, n = 512)+
+  scale_x_time()+
+  ggtitle("Poop times per participant")+
+  theme_bw()
+```
+
+Shittiest day
+
+```{r}
+ggplot(poops_only, aes(x = date, fill = participant))+
+  geom_histogram()+
+  ggtitle("Shittiest day")+
+  theme_bw()
+```
+
+Shit leaderboard
+
+```{r}
+plot_df = as.data.frame(sort(table(poops_only$participant)))
+
+ggplot(plot_df, aes(x = Freq, y = Var1))+
+  geom_col(width = 0.1, just = 0.5)+
+  emoGG::geom_emoji(emoji = "1f4a9")+
+  scale_x_continuous(limits = c(0, max(plot_df$Freq)+max(plot_df$Freq)/10), 
+                     expand = c(0,0))+
+  labs(x = "Total", y = "Participant")+
+  ggtitle("Shit leaderboard")+
+  theme_classic()+
+  theme(axis.text = element_text(size = 10, colour = "black"))
+```
+
+Longest time between poops (for each participant)
+
+```{r}
+
+```
+
+
