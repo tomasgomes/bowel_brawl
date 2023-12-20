@@ -43,7 +43,7 @@ processLines = function(l){
 }
 
 # Prepare data
-chat_data = readFile("data/20231218_Sobre merda.txt")
+chat_data = readFile("data/20231220_Sobre merda.txt")
 chat_data = processLines(chat_data)
 
 chat_data$datetime = lubridate::dmy_hm(chat_data$datetime)
@@ -80,6 +80,10 @@ chat_data[chat_data$message=="💩 (o de ontem)", "time"] = lubridate::hm("10:00
 chat_data[chat_data$message=="💩 (o de sexta de manhã)", "datetime"] = lubridate::dmy_hm("15/12/23, 10:30")
 chat_data[chat_data$message=="💩 (o de sexta de manhã)", "date"] = lubridate::dmy("15/12/23")
 chat_data[chat_data$message=="💩 (o de sexta de manhã)", "time"] = lubridate::hm("10:30")
+
+## fix time for Escudeiro's poops
+chat_data[chat_data$message=="💩 (retroactivo 13:30h)", "datetime"] = lubridate::dmy_hm("20/12/23, 13:30")
+chat_data[chat_data$message=="💩 (retroactivo 13:30h)", "time"] = lubridate::hm("13:30")
 
 ## only poops
 poops_only = chat_data[grepl("\U0001f4a9", chat_data$message, fixed = T),]
