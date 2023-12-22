@@ -1,6 +1,7 @@
 
 # load libraries
 library(ggplot2)
+library(emoGG)
 library(lubridate)
 library(dplyr)
 
@@ -43,7 +44,7 @@ processLines = function(l){
 }
 
 # Prepare data
-chat_data = readFile("data/20231220_Sobre merda.txt")
+chat_data = readFile("data/20231222_Sobre merda.txt")
 chat_data = processLines(chat_data)
 
 chat_data$datetime = lubridate::dmy_hm(chat_data$datetime)
@@ -84,6 +85,10 @@ chat_data[chat_data$message=="💩 (o de sexta de manhã)", "time"] = lubridate:
 ## fix time for Escudeiro's poops
 chat_data[chat_data$message=="💩 (retroactivo 13:30h)", "datetime"] = lubridate::dmy_hm("20/12/23, 13:30")
 chat_data[chat_data$message=="💩 (retroactivo 13:30h)", "time"] = lubridate::hm("13:30")
+
+## fix time for Rui's poops
+chat_data[chat_data$message=="💩 (foi por volta das 11:30)", "datetime"] = lubridate::dmy_hm("22/12/23, 11:30")
+chat_data[chat_data$message=="💩 (foi por volta das 11:30)", "time"] = lubridate::hm("11:30")
 
 ## only poops
 poops_only = chat_data[grepl("\U0001f4a9", chat_data$message, fixed = T),]
