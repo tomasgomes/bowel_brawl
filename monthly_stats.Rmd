@@ -1,0 +1,38 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+Monthly stats
+
+```{r}
+dec_poops = poops_only[poops_only$datetime<"2024-01-01 00:00:00 UTC",]
+```
+
+
+
+Shittiest day
+
+```{r}
+ggplot(dec_poops, aes(x = date, fill = participant))+
+  geom_bar()+
+  ggtitle("Shittiest day - December 2023")+
+  scale_y_continuous(expand = c(0,0), limits = c(0, 18))+
+  theme_bw()
+```
+
+Shit leaderboard
+
+```{r}
+plot_df = as.data.frame(sort(table(dec_poops$participant)))
+
+ggplot(plot_df, aes(x = Freq, y = Var1))+
+  geom_col(width = 0.1, just = 0.5)+
+  emoGG::geom_emoji(emoji = "1f4a9")+
+  scale_x_continuous(limits = c(0, max(plot_df$Freq)+max(plot_df$Freq)/10), 
+                     expand = c(0,0))+
+  labs(x = "Total", y = "Participant")+
+  ggtitle("Shit leaderboard - December 2023")+
+  theme_classic()+
+  theme(axis.text = element_text(size = 10, colour = "black"))
+```
