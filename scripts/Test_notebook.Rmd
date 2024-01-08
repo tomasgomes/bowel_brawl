@@ -56,9 +56,9 @@ Poop times
 
 ```{r}
 ggplot(poops_only, aes(x = time, fill = participant))+
-  geom_histogram(bins = 60)+
+  geom_histogram(binwidth = 900)+
   coord_polar()+
-  scale_x_time()+
+  scale_x_time(expand = c(0,0))+
   scale_y_continuous(expand = c(0,0))+
   ggtitle("Poop times")+
   theme_bw()
@@ -81,7 +81,7 @@ Shittiest day
 ggplot(poops_only, aes(x = date, fill = participant))+
   geom_bar()+
   ggtitle("Shittiest day")+
-  scale_y_continuous(expand = c(0,0), limits = c(0, 18))+
+  scale_y_continuous(expand = c(0,0), limits = c(0, 21))+
   theme_bw()
 ```
 
@@ -171,14 +171,10 @@ pheatmap::pheatmap(plot_df, clustering_method = "ward.D",
                    main = "People pooping up to 2min apart")
 ```
 
-Synching (autocorrelation)
+Pooping rate
 
 ```{r}
-acf(poops_only[poops_only$participant=="Rui","datetime"],
-    poops_only[poops_only$participant=="Tiago","datetime"])
 
-x = acf(poops_only[poops_only$participant=="Cabecinha","datetime"],
-    poops_only[poops_only$participant=="Escudeiro","datetime"])
 ```
 
 
