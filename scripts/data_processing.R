@@ -44,7 +44,7 @@ processLines = function(l){
 }
 
 # Prepare data
-chat_data = readFile("data/20240129_Sobre merda.txt")
+chat_data = readFile("data/20240210_Sobre merda.txt")
 chat_data = processLines(chat_data)
 
 chat_data$datetime = lubridate::dmy_hm(chat_data$datetime)
@@ -98,6 +98,8 @@ chat_data[chat_data$message=="💩(das 8:50)", "datetime"] = lubridate::dmy_hm("
 chat_data[chat_data$message=="💩(das 8:50)", "time"] = lubridate::hm("8:50")
 chat_data[chat_data$message=="💩 (das 9:45)", "datetime"] = lubridate::dmy_hm("19/01/24, 9:45")
 chat_data[chat_data$message=="💩 (das 9:45)", "time"] = lubridate::hm("9:45")
+chat_data[chat_data$message=="💩 (o das 10:45, esqueci-me 😅)", "datetime"] = lubridate::dmy_hm("04/02/24, 9:45")
+chat_data[chat_data$message=="💩 (o das 10:45, esqueci-me 😅)", "time"] = lubridate::hm("9:45")
 
 ### adjust Henrique's time zone
 chat_data[chat_data$participant=="Kicks","datetime"] = lubridate::with_tz(chat_data[chat_data$participant=="Kicks","datetime"], "CET")
@@ -131,6 +133,10 @@ chat_data[chat_data$message=="💩 (22h)", "datetime"] = lubridate::dmy_hm("23/0
 chat_data[chat_data$message=="💩 (22h)", "time"] = lubridate::hm("22:00")
 chat_data[chat_data$message=="💩 (foi as 12h)", "datetime"] = lubridate::dmy_hm("26/01/24, 12:00")
 chat_data[chat_data$message=="💩 (foi as 12h)", "time"] = lubridate::hm("12:00")
+chat_data[chat_data$message=="💩 (15h)", "datetime"] = lubridate::dmy_hm("02/02/24, 15:00")
+chat_data[chat_data$message=="💩 (15h)", "time"] = lubridate::hm("15:00")
+chat_data[chat_data$message=="💩 (foi as 13h)" & chat_data$date=="2024-02-01", "datetime"] = lubridate::dmy_hm("01/02/24, 13:00")
+chat_data[chat_data$message=="💩 (foi as 13h)" & chat_data$date=="2024-02-01", "time"] = lubridate::hm("13:00")
 
 # fix time for Tomas' poops
 chat_data[chat_data$message=="💩,29/12/2023,22:50", "datetime"] = lubridate::dmy_hm("29/12/2023, 22:50")

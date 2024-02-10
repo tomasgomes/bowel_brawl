@@ -159,12 +159,13 @@ Pairings (up to 2min apart)
 all_diffs = poops_only[order(poops_only$datetime),] %>% 
   mutate(difft = datetime - lag(datetime))
 
-ind_close1 = which(all_diffs$difft<=120)-1
-ind_close2 = which(all_diffs$difft<=120)
+ind_close1 = which(all_diffs$difft<=121)-1
+ind_close2 = which(all_diffs$difft<=121)
 close_diffs = data.frame("p1" = all_diffs[ind_close1,"participant"],
                          "p2" = all_diffs[ind_close2,"participant"])
 
 plot_df = table(close_diffs$p1, close_diffs$p2)
+diag(plot_df) = 0 # quick fix for a werid thing
 
 pheatmap::pheatmap(plot_df+t(plot_df), clustering_method = "ward.D", 
                    display_numbers = T, number_format = "%.0f",
@@ -172,13 +173,39 @@ pheatmap::pheatmap(plot_df+t(plot_df), clustering_method = "ward.D",
                    main = "People pooping up to 2min apart")
 ```
 
+Pooping rate - poops per day
 
+```{r, fig.height=5}
+poops_day = reshape2::melt(table(poops_only$date, poops_only$participant))
+poops_day$Var1 = lubridate::as_date(poops_day$Var1)
+r = as.data.frame(sort(table(poops_only$participant)))
+poops_day$Var2 = factor(poops_day$Var2, levels = r$Var1)
 
-Pooping rate
-
-```{r}
-
+ggplot(poops_day, aes(x = value, y = Var2, colour = Var2))+
+  geom_jitter(width = 0.1, height = 0.35, mapping = aes(alpha = Var1))+
+  stat_summary(size = 1, linewidth = 1.5, colour = "red", fun.data = "mean_cl_boot")+
+  labs(alpha = "Date", y = "Participant", x = "Poops/day", colour = "Participant")+
+  theme_bw()
 ```
 
+Pooping rate - rolling rate
 
+```{r}
+rolling_poop = poops_day %>%
+  dplyr::group_by(Var2) %>% 
+  dplyr::mutate(poop_03da = zoo::rollmean(value, k = 3, fill = NA),
+                poop_05da = zoo::rollmean(value, k = 5, fill = NA),
+                poop_07da = zoo::rollmean(value, k = 7, fill = NA))
+
+ggplot(rolling_poop, aes(x = Var1, y = poop_05da, colour = Var2))+
+  facet_wrap(~Var2)+
+  geom_smooth(colour = "gray60", alpha = 0.5)+
+  geom_line(linewidth = 1.22)+
+  scale_x_date()+
+  labs(title = "Poop rates per participant",
+       subtitle = "Rolling average (5 days)",
+       x = "Date", y = "Poops/day rolling average (5d)", 
+       colour = "Participant")+
+  theme_bw()
+```
 
