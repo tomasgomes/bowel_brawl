@@ -93,6 +93,7 @@ plot_df = as.data.frame(sort(table(poops_only$participant)))
 ggplot(plot_df, aes(x = Freq, y = Var1))+
   geom_col(width = 0.1, just = 0.5)+
   emoGG::geom_emoji(emoji = "1f4a9")+
+  geom_text(mapping = aes(label = Freq), nudge_y = 0.5)+
   scale_x_continuous(limits = c(0, max(plot_df$Freq)+max(plot_df$Freq)/10), 
                      expand = c(0,0))+
   labs(x = "Total", y = "Participant")+
@@ -155,7 +156,7 @@ ggplot()+
 Pairings (up to 2min apart)
 
 ```{r, fig.height=3.3, fig.width=4}
-all_diffs = poops_only %>% 
+all_diffs = poops_only[order(poops_only$datetime),] %>% 
   mutate(difft = datetime - lag(datetime))
 
 ind_close1 = which(all_diffs$difft<=120)-1
@@ -165,11 +166,13 @@ close_diffs = data.frame("p1" = all_diffs[ind_close1,"participant"],
 
 plot_df = table(close_diffs$p1, close_diffs$p2)
 
-pheatmap::pheatmap(plot_df, clustering_method = "ward.D", 
+pheatmap::pheatmap(plot_df+t(plot_df), clustering_method = "ward.D", 
                    display_numbers = T, number_format = "%.0f",
                    treeheight_row = 20, treeheight_col = 20, 
                    main = "People pooping up to 2min apart")
 ```
+
+
 
 Pooping rate
 
