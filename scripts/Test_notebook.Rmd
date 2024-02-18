@@ -190,7 +190,7 @@ ggplot(poops_day, aes(x = value, y = Var2, colour = Var2))+
 
 Pooping rate - rolling rate
 
-```{r}
+```{r, fig.width=9}
 rolling_poop = poops_day %>%
   dplyr::group_by(Var2) %>% 
   dplyr::mutate(poop_03da = zoo::rollmean(value, k = 3, fill = NA),

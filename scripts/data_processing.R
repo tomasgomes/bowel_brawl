@@ -30,13 +30,19 @@ processLines = function(l){
              "participant" = c(),
              "message" = c())
   for(line in l){
-    if(grepl(": ", line, fixed = T)){
+    if(grepl(": ", line, fixed = T) & grepl(" - ", line, fixed = T)){
       lspl = strsplit(line, " - ", fixed = T)[[1]]
       res[["datetime"]] = c(res[["datetime"]], lspl[1])
       res[["date"]] = c(res[["date"]], strsplit(lspl[1], ", ", fixed = T)[[1]][1])
       res[["time"]] = c(res[["time"]], strsplit(lspl[1], ", ", fixed = T)[[1]][2])
       res[["participant"]] = c(res[["participant"]], strsplit(lspl[2], ": ", fixed = T)[[1]][1])
       res[["message"]] = c(res[["message"]], strsplit(lspl[2], ": ", fixed = T)[[1]][2])
+    } else if(!grepl(" - ", line, fixed = T)){
+      res[["datetime"]] = c(res[["datetime"]], res[["datetime"]][length(res[["datetime"]])])
+      res[["date"]] = c(res[["date"]], res[["date"]][length(res[["date"]])])
+      res[["time"]] = c(res[["time"]], res[["time"]][length(res[["time"]])])
+      res[["participant"]] = c(res[["participant"]], res[["participant"]][length(res[["participant"]])])
+      res[["message"]] = c(res[["message"]], line)
     }
   }
   
@@ -44,7 +50,7 @@ processLines = function(l){
 }
 
 # Prepare data
-chat_data = readFile("data/20240210_Sobre merda.txt")
+chat_data = readFile("data/20240218_Sobre merda.txt")
 chat_data = processLines(chat_data)
 
 chat_data$datetime = lubridate::dmy_hm(chat_data$datetime)
@@ -100,6 +106,12 @@ chat_data[chat_data$message=="💩 (das 9:45)", "datetime"] = lubridate::dmy_hm(
 chat_data[chat_data$message=="💩 (das 9:45)", "time"] = lubridate::hm("9:45")
 chat_data[chat_data$message=="💩 (o das 10:45, esqueci-me 😅)", "datetime"] = lubridate::dmy_hm("04/02/24, 9:45")
 chat_data[chat_data$message=="💩 (o das 10:45, esqueci-me 😅)", "time"] = lubridate::hm("9:45")
+chat_data[chat_data$message=="💩 (o das 11h)", "datetime"] = lubridate::dmy_hm("14/02/24, 11:00")
+chat_data[chat_data$message=="💩 (o das 11h)", "time"] = lubridate::hm("11:00")
+chat_data[chat_data$message=="💩 (o das 17h)", "datetime"] = lubridate::dmy_hm("14/02/24, 17:00")
+chat_data[chat_data$message=="💩 (o das 17h)", "time"] = lubridate::hm("17:00")
+chat_data[chat_data$message=="💩 (meia-hora atrás)", "datetime"] = lubridate::dmy_hm("15/02/24, 9:37")
+chat_data[chat_data$message=="💩 (meia-hora atrás)", "time"] = lubridate::hm("9:37")
 
 ### adjust Henrique's time zone
 chat_data[chat_data$participant=="Kicks","datetime"] = lubridate::with_tz(chat_data[chat_data$participant=="Kicks","datetime"], "CET")
