@@ -209,3 +209,22 @@ ggplot(rolling_poop, aes(x = Var1, y = poop_05da, colour = Var2))+
   theme_bw()
 ```
 
+Number of rectifications
+
+```{r, fig.height=5}
+plot_df = poops_only
+plot_df$nc = nchar(plot_df$message)
+plot_df = plot_df[plot_df$nc>1,]
+plot_df = as.data.frame(sort(table(plot_df$participant)))
+
+ggplot(plot_df, aes(x = Freq, y = Var1))+
+  geom_col(width = 0.1, just = 0.5)+
+  emoGG::geom_emoji(emoji = "1f621")+
+  geom_text(mapping = aes(label = Freq), nudge_y = 0.5)+
+  scale_x_continuous(limits = c(0, max(plot_df$Freq)+max(plot_df$Freq)/10), 
+                     expand = c(0,0))+
+  labs(x = "Number of corrections", y = "Participant")+
+  ggtitle("Look at me, I really like going to the bathroom and reading the back of\na shampoo bottle instead of BRINGING MY FUCKING PHONE!")+
+  theme_classic()+
+  theme(axis.text = element_text(size = 10, colour = "black"))
+```

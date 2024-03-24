@@ -50,7 +50,7 @@ processLines = function(l){
 }
 
 # Prepare data
-chat_data = readFile("data/20240224_Sobre merda.txt")
+chat_data = readFile("data/20240324_Sobre merda.txt")
 chat_data = processLines(chat_data)
 
 chat_data$datetime = lubridate::dmy_hm(chat_data$datetime)
@@ -79,7 +79,7 @@ bad_poops = chat_data$time > lubridate::hm("2:36") &
   chat_data$date==lubridate::dmy("15/12/23")
 chat_data = chat_data[!bad_poops,]
 
-## fix date for Henrique's first three poops
+## fix date for Henrique's poops
 ### times are approximate, by indication of the participant
 chat_data[chat_data$message=="💩 (o de ontem)", "datetime"] = lubridate::dmy_hm("16/12/23, 10:00")
 chat_data[chat_data$message=="💩 (o de ontem)", "date"] = lubridate::dmy("16/12/23")
@@ -106,12 +106,19 @@ chat_data[chat_data$message=="💩 (das 9:45)", "datetime"] = lubridate::dmy_hm(
 chat_data[chat_data$message=="💩 (das 9:45)", "time"] = lubridate::hm("9:45")
 chat_data[chat_data$message=="💩 (o das 10:45, esqueci-me 😅)", "datetime"] = lubridate::dmy_hm("04/02/24, 9:45")
 chat_data[chat_data$message=="💩 (o das 10:45, esqueci-me 😅)", "time"] = lubridate::hm("9:45")
-chat_data[chat_data$message=="💩 (o das 11h)", "datetime"] = lubridate::dmy_hm("14/02/24, 11:00")
-chat_data[chat_data$message=="💩 (o das 11h)", "time"] = lubridate::hm("11:00")
+chat_data[chat_data$message=="💩 (o das 11h)" & chat_data$date=="2024/02/14", "datetime"] = lubridate::dmy_hm("14/02/24, 11:00")
+chat_data[chat_data$message=="💩 (o das 11h)" & chat_data$date=="2024/02/14", "time"] = lubridate::hm("11:00")
 chat_data[chat_data$message=="💩 (o das 17h)", "datetime"] = lubridate::dmy_hm("14/02/24, 17:00")
 chat_data[chat_data$message=="💩 (o das 17h)", "time"] = lubridate::hm("17:00")
 chat_data[chat_data$message=="💩 (meia-hora atrás)", "datetime"] = lubridate::dmy_hm("15/02/24, 9:37")
 chat_data[chat_data$message=="💩 (meia-hora atrás)", "time"] = lubridate::hm("9:37")
+chat_data[chat_data$message=="💩 (o das 11h)" & chat_data$date=="2024/02/25", "datetime"] = lubridate::dmy_hm("25/02/24, 11:00")
+chat_data[chat_data$message=="💩 (o das 11h)" & chat_data$date=="2024/02/25", "time"] = lubridate::hm("11:00")
+chat_data[chat_data$message=="💩 (o das 10:30 de ontem)", "datetime"] = lubridate::dmy_hm("04/03/2024, 10:30")
+chat_data[chat_data$message=="💩 (o das 10:30 de ontem)", "date"] = lubridate::dmy("04/03/2024")
+chat_data[chat_data$message=="💩 (o das 10:30 de ontem)", "time"] = lubridate::hm("10:30")
+chat_data[chat_data$message=="💩 (o das 7:30h de hoje)", "datetime"] = lubridate::dmy_hm("05/03/2024, 7:30")
+chat_data[chat_data$message=="💩 (o das 7:30h de hoje)", "time"] = lubridate::hm("7:30")
 
 ### adjust Henrique's time zone
 chat_data[chat_data$participant=="Kicks","datetime"] = lubridate::with_tz(chat_data[chat_data$participant=="Kicks","datetime"], "CET")
@@ -153,6 +160,12 @@ chat_data[chat_data$message=="💩 (foi as 15h)", "datetime"] = lubridate::dmy_h
 chat_data[chat_data$message=="💩 (foi as 15h)", "time"] = lubridate::hm("15:00")
 chat_data[chat_data$message=="💩 (foi as 10h)", "datetime"] = lubridate::dmy_hm("18/02/24, 10:00")
 chat_data[chat_data$message=="💩 (foi as 10h)", "time"] = lubridate::hm("10:00")
+chat_data[chat_data$message=="💩 (11:30)", "datetime"] = lubridate::dmy_hm("08/03/24, 11:30")
+chat_data[chat_data$message=="💩 (11:30)", "time"] = lubridate::hm("11:30")
+chat_data[chat_data$message=="💩 (16:00)", "datetime"] = lubridate::dmy_hm("08/03/24, 16:00")
+chat_data[chat_data$message=="💩 (16:00)", "time"] = lubridate::hm("16:00")
+chat_data[chat_data$message=="💩 (14:30)", "datetime"] = lubridate::dmy_hm("04/03/24, 14:30")
+chat_data[chat_data$message=="💩 (14:30)", "time"] = lubridate::hm("14:30")
 
 # fix time for Tomas' poops
 chat_data[chat_data$message=="💩,29/12/2023,22:50", "datetime"] = lubridate::dmy_hm("29/12/2023, 22:50")
@@ -166,6 +179,23 @@ chat_data[chat_data$message=="💩(20:45)", "datetime"] = lubridate::dmy_hm("25/
 chat_data[chat_data$message=="💩(20:45)", "time"] = lubridate::hm("20:45")
 chat_data[chat_data$message=="💩02:22", "datetime"] = lubridate::dmy_hm("21/02/24, 02:20")
 chat_data[chat_data$message=="💩02:22", "time"] = lubridate::hm("02:20")
+chat_data[chat_data$message=="💩(ontem 22h30)", "datetime"] = lubridate::dmy_hm("04/03/2024, 22:30")
+chat_data[chat_data$message=="💩(ontem 22h30)", "date"] = lubridate::dmy("04/03/2024")
+chat_data[chat_data$message=="💩(ontem 22h30)", "time"] = lubridate::hm("22:30")
+chat_data[chat_data$message=="💩 (00:10)" & chat_data$date=="2024/03/22", "datetime"] = lubridate::dmy_hm("22/03/24, 00:10")
+chat_data[chat_data$message=="💩 (00:10)" & chat_data$date=="2024/03/22", "time"] = lubridate::hm("00:10")
+
+
+# fix Canonico's poops
+chat_data[chat_data$message=="💩 (8:30)", "datetime"] = lubridate::dmy_hm("26/02/24, 08:30")
+chat_data[chat_data$message=="💩 (8:30)", "time"] = lubridate::hm("08:30")
+chat_data[chat_data$message=="💩 (10:31)", "datetime"] = lubridate::dmy_hm("10/03/24, 10:31")
+chat_data[chat_data$message=="💩 (10:31)", "time"] = lubridate::hm("10:31")
+
+# fix Tiago's poops
+chat_data[chat_data$message=="💩 (dia 13 por volta das 14:00)", "datetime"] = lubridate::dmy_hm("13/03/2024, 14:00")
+chat_data[chat_data$message=="💩 (dia 13 por volta das 14:00)", "date"] = lubridate::dmy("13/03/2024")
+chat_data[chat_data$message=="💩 (dia 13 por volta das 14:00)", "time"] = lubridate::hm("14:00")
 
 
 # remove one from Escudeiro
