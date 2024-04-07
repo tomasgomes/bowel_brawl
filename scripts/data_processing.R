@@ -50,7 +50,7 @@ processLines = function(l){
 }
 
 # Prepare data
-chat_data = readFile("data/20240324_Sobre merda.txt")
+chat_data = readFile("data/20240407_Sobre merda.txt")
 chat_data = processLines(chat_data)
 
 chat_data$datetime = lubridate::dmy_hm(chat_data$datetime)
@@ -196,6 +196,8 @@ chat_data[chat_data$message=="💩 (10:31)", "time"] = lubridate::hm("10:31")
 chat_data[chat_data$message=="💩 (dia 13 por volta das 14:00)", "datetime"] = lubridate::dmy_hm("13/03/2024, 14:00")
 chat_data[chat_data$message=="💩 (dia 13 por volta das 14:00)", "date"] = lubridate::dmy("13/03/2024")
 chat_data[chat_data$message=="💩 (dia 13 por volta das 14:00)", "time"] = lubridate::hm("14:00")
+chat_data[chat_data$message=="💩 (13:00)", "datetime"] = lubridate::dmy_hm("27/03/24, 13:00")
+chat_data[chat_data$message=="💩 (13:00)", "time"] = lubridate::hm("13:00")
 
 
 # remove one from Escudeiro
