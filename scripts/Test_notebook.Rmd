@@ -6,6 +6,7 @@ output: html_notebook
 
 All poops so far
 
+
 ```{r}
 ggplot(poops_only, aes(x = datetime, fill = participant))+
   geom_histogram(bins = 50)+
